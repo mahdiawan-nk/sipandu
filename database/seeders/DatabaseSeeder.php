@@ -15,10 +15,10 @@ class DatabaseSeeder extends Seeder
     public function run()
     {
         Pengguna::create([
-            'nama_pengguna'=>'petugas-2',
+            'nama_pengguna'=>'Administrator',
             'password_pengguna'=>md5('123456'),
-            'email_pengguna'=>'petugas-2@mail.com',
-            'role'=>'P',
+            'email_pengguna'=>'admins@mail.com',
+            'role'=>'A',
             'status_akun'=>'Y'
         ]);
     }
