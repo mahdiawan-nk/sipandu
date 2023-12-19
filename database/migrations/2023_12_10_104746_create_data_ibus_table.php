@@ -25,6 +25,7 @@ class CreateDataIbusTable extends Migration
             $table->string('no_hp')->default(null);
             $table->string('gol_darah')->default(null);
             $table->string('riwayat_kesehatan')->default(null);
+            $table->string('password_pengguna');
             $table->timestamps();
         });
     }

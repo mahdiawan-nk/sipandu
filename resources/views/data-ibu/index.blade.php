@@ -137,16 +137,26 @@
                         return response.json();
                     })
                     .then(data => {
-                        $('#add').modal('hide')
-                        Swal.fire({
-                            position: "top-end",
-                            icon: "success",
-                            title: "Your work has been saved",
-                            showConfirmButton: false,
-                            timer: 1500
-                        }).then((result) => {
-                            table.ajax.reload(null, false);
-                        })
+                        if (data.status) {
+                            Swal.fire({
+                                position: "top-end",
+                                icon: "success",
+                                title: data.message,
+                                showConfirmButton: false,
+                                timer: 1500
+                            }).then((result) => {
+                                $('#add').modal('hide')
+                                table.ajax.reload()
+                            })
+
+                        } else {
+                            Swal.fire({
+                                icon: 'error',
+                                title: 'Gagal',
+                                text: data.message
+                            })
+                        }
+
                     })
                     .catch(error => {
                         console.error(error);
@@ -216,7 +226,7 @@
 
             $('#btn-hapus').on('click', function() {
                 const url = '{{ route('ibu.dataibu.destroy', ['dataibu' => ':id']) }}'.replace(':id',
-                idData);
+                    idData);
                 const requestOptions = {
                     method: 'DELETE',
                 };

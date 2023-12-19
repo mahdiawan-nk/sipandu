@@ -15,11 +15,12 @@ class CreatePenggunasTable extends Migration
     {
         Schema::create('penggunas', function (Blueprint $table) {
             $table->increments('id');
+            $table->integer('id_posyandu');
             $table->string('nama_pengguna');
             $table->string('email_pengguna');
             $table->string('password_pengguna');
-            $table->enum('role',['A','P'])->comment('A : Admin P : Petugas');
-            $table->enum('status_akun',['Y','N'])->comment('Y : aktif N : tidak aktif');
+            $table->enum('role', ['A', 'P'])->comment('A : Admin P : Petugas');
+            $table->enum('status_akun', ['Y', 'N'])->comment('Y : aktif N : tidak aktif');
             $table->timestamps();
         });
     }

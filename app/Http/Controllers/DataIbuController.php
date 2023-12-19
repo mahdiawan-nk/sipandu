@@ -44,10 +44,24 @@ class DataIbuController extends Controller
     public function store(Request $request)
     {
         $postData = $request->all();
-        $postData['password_pengguna'] = md5($request->post('nik'));
-        $insert = DataIbu::create($postData);
+        if ($this->nikexist($request->post('nik'))) {
+            return response()->json([
+                'status' => false,
+                'message' => 'NIK sudah terdaftar'
+            ]);
+        } else {
+            $postData['password_pengguna'] = md5($request->post('nik'));
+            $insert = DataIbu::create($postData);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil ditambahkan'
+            ]);
+        }
+    }
 
-        return response()->json($insert);
+    protected function nikexist($nik)
+    {
+        return DataIbu::where('nik', $nik)->exists();
     }
 
     /**
