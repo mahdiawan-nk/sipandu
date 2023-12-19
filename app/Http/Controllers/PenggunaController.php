@@ -2,81 +2,143 @@
 
 namespace App\Http\Controllers;
 
-use Illuminate\Support\Facades\Validator;
 use Illuminate\Http\Request;
 use App\Models\Pengguna;
-use App\Models\DataIbu;
-use Illuminate\Support\Facades\Session;
 
 class PenggunaController extends Controller
 {
+    function views()
+    {
+        $this->data = [
+            'title' => 'Data Pengguna',
+        ];
+        return view('data-pengguna.index', $this->data);
+    }
+    /**
+     * Display a listing of the resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
     public function index()
     {
-        return view('login');
+        $dataAnak = Pengguna::with(['dataPosyandu'])
+            ->get()
+            ->map(function ($data) {
+                return $this->transformedData($data);
+            });
+        return response()->json($dataAnak);
+    }
+    protected function transformedData($data)
+    {
+        return [
+            'id' => $data->id,
+            'id_posyandu' => $data->id_posyandu,
+            'nama_pengguna' => $data->nama_pengguna,
+            'email_pengguna' => $data->email_pengguna,
+            'password_pengguna' => '',
+            'role' => $data->role,
+            'status_akun' => $data->status_akun,
+            'posyandu' => $data->dataPosyandu ? $data->dataPosyandu->nama_posyandu : null
+        ];
     }
 
-    public function checkLogin(Request $request)
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+    public function create()
     {
-        if ($request->nik) {
-            $validator = Validator::make($request->all(), [
-                'nik' => 'required|max:255',
-                'password_pengguna' => 'required|string|min:6',
+        //
+    }
+
+    /**
+     * Store a newly created resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @return \Illuminate\Http\Response
+     */
+    public function store(Request $request)
+    {
+        $dataPengguna = $request->post();
+        if ($this->emailexist($request->post('email_pengguna'))) {
+            return response()->json([
+                'status' => false,
+                'message' => 'Email sudah terdaftar'
             ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            $dataPost = $request->post();
-            unset($dataPost['_token']);
-
-            $checkNIK = DataIbu::where('nik', $request->post('nik'))->first();
-
-            if ($checkNIK) {
-                $checkPassNik = $checkNIK = DataIbu::where('nik', $request->post('password_pengguna'))->first();
-                if ($checkPassNik) {
-                    $dataSession = ['login' => TRUE, 'uuid' =>  $checkNIK->id, 'username' =>  $checkNIK->nama, 'role' => 'O'];
-                    session($dataSession);
-                    return redirect()->route('dashboard');
-                } else {
-                    return redirect()->back()->with('error', 'Data Pass Salah');
-                }
-            } else {
-                return redirect()->back()->with('error', 'Akun Tidak Ada');
-            }
         } else {
-            $validator = Validator::make($request->all(), [
-                'email_pengguna' => 'required|email|max:255',
-                'password_pengguna' => 'required|string|min:6',
+            $dataPengguna['password_pengguna'] = md5($request->post('password_pengguna'));
+            Pengguna::create($dataPengguna);
+            return response()->json([
+                'status' => true,
+                'message' => 'Data berhasil ditambahkan',
+                'data' => $dataPengguna,
             ]);
-
-            if ($validator->fails()) {
-                return redirect()->back()->withErrors($validator)->withInput();
-            }
-
-            $dataPost = $request->post();
-            unset($dataPost['_token']);
-            $dataPost['password_pengguna'] = md5($dataPost['password_pengguna']);
-            $checkAkun = Pengguna::where($dataPost)->first();
-
-            if ($checkAkun) {
-                $dataSession = ['login' => TRUE, 'uuid' => $checkAkun->id, 'username' => $checkAkun->nama_pengguna, 'role' => $checkAkun->role, 'posyandu' => $checkAkun->id_posyandu];
-                session($dataSession);
-                return redirect()->route('dashboard');
-            } else {
-                return redirect()->back()->with('error', 'Data Deleted');
-            }
         }
     }
 
-    public function logout(Request $request)
+    protected function emailexist($email)
     {
-        if (in_array(Session::get('role'), ['A', 'P'])) {
-            Session::flush();
-            return redirect('/admin');
-        }else{
-            Session::flush();
-            return redirect('/');
+        $emailUser = Pengguna::where('email_pengguna', $email)->first();
+
+        return $emailUser ? true : false;
+    }
+
+    /**
+     * Display the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function show($id)
+    {
+        //
+    }
+
+    /**
+     * Show the form for editing the specified resource.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function edit($id)
+    {
+        //
+    }
+
+    /**
+     * Update the specified resource in storage.
+     *
+     * @param  \Illuminate\Http\Request  $request
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function update(Request $request, $pengguna)
+    {
+        $dataPengguna = $request->post();
+        unset($dataPengguna['_token']);
+        unset($dataPengguna['_method']);
+        if ($request->post('password_pengguna') != null) {
+            $dataPengguna['password_pengguna'] = md5($request->post('password_pengguna'));
+        } else {
+            unset($dataPengguna['password_pengguna']);
         }
+
+        Pengguna::where('id', $pengguna)->update($dataPengguna);
+        return response()->json($dataPengguna);
+    }
+
+    /**
+     * Remove the specified resource from storage.
+     *
+     * @param  int  $id
+     * @return \Illuminate\Http\Response
+     */
+    public function destroy(Pengguna $pengguna)
+    {
+        $pengguna->delete();
+        return response()->json([
+            'message' => 'Deleted Successfully!!'
+        ]);
     }
 }

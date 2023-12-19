@@ -165,13 +165,14 @@
                 eventClick: function(info) {
                     if (eventClick) {
                         idData = info.event.id
-                        dataPosyandu('#update')
+
                         $.ajax({
                             type: "GET",
                             url: '{{ route('jadwalposyandu.datajadwalposyandu.show', ['datajadwalposyandu' => ':idData']) }}'
                                 .replace(':idData', info.event.id),
                             dataType: "JSON",
                             success: function(response) {
+                                dataPosyandu('#update')
                                 $('#e-id_posyandu').val(response.id_posyandu).trigger(
                                     'change');
                                 $('[name="start"]').val(response.start)

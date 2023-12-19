@@ -1,6 +1,7 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\AuthController;
 use App\Http\Controllers\PenggunaController;
 use App\Http\Controllers\HomeController;
 use App\Http\Controllers\DataIbuController;
@@ -12,6 +13,7 @@ use App\Http\Controllers\DataJenisImunisasiController;
 use App\Http\Controllers\DataCheckUpController;
 use App\Http\Controllers\DataCheckImunisasiController;
 use App\Http\Controllers\DataCheckVitaminController;
+use App\Http\Controllers\LandingPageController;
 
 
 /*
@@ -25,22 +27,24 @@ use App\Http\Controllers\DataCheckVitaminController;
 |
 */
 
-Route::get('/', function () {
-    $data['for']='pengguna-ortu';
-    return view('login',$data);
+Route::get('/ortu', function () {
+    $data['for'] = 'pengguna-ortu';
+    return view('login', $data);
 })->middleware('checkIfAuthenticated');
 
 
 Route::get('/admin', function () {
-    $data['for']='pengguna-admin';
-    return view('login',$data);
+    $data['for'] = 'pengguna-admin';
+    return view('login', $data);
 })->middleware('checkIfAuthenticated');
 
-Route::post('login', [PenggunaController::class, 'checkLogin'])->name('checklogin');
+Route::post('login', [AuthController::class, 'checkLogin'])->name('checklogin');
+
+Route::get('/', [LandingPageController::class, 'index']);
 Route::middleware(['isLoggedIn'])->group(function () {
-    
-    
-    Route::get('logout', [PenggunaController::class, 'logout'])->name('log-out');
+
+
+    Route::get('logout', [AuthController::class, 'logout'])->name('log-out');
     Route::get('home', [HomeController::class, 'index'])->name('dashboard');
 
     Route::get('dataibu', [DataIbuController::class, 'views'])->name('master-ibu');
@@ -53,8 +57,5 @@ Route::middleware(['isLoggedIn'])->group(function () {
     Route::get('datacheckup/js', [DataCheckUpController::class, 'index']);
     Route::get('datacheckimunisasi', [DataCheckImunisasiController::class, 'views'])->name('master-check-imunisasi');
     Route::get('datacheckvitamin', [DataCheckVitaminController::class, 'views'])->name('master-check-vitamin');
-    
-
+    Route::get('pengguna', [PenggunaController::class, 'views'])->name('pengguna');
 });
-
-

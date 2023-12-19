@@ -43,7 +43,9 @@ class DataIbuController extends Controller
      */
     public function store(Request $request)
     {
-        $insert = DataIbu::create($request->all());
+        $postData = $request->all();
+        $postData['password_pengguna'] = md5($request->post('nik'));
+        $insert = DataIbu::create($postData);
 
         return response()->json($insert);
     }
@@ -79,10 +81,12 @@ class DataIbuController extends Controller
      */
     public function update(Request $request, DataIbu $dataibu)
     {
-        $dataibu->fill($request->post())->save();
+        $postData = $request->post();
+        $postData['password_pengguna'] = md5($request->post('nik'));
+        $dataibu->fill($postData)->save();
         return response()->json([
-            'message'=>'Updated Successfully!!',
-            'category'=>$dataibu
+            'message' => 'Updated Successfully!!',
+            'category' => $dataibu
         ]);
     }
 
@@ -96,7 +100,7 @@ class DataIbuController extends Controller
     {
         $dataibu->delete();
         return response()->json([
-            'message'=>'Deleted Successfully!!'
+            'message' => 'Deleted Successfully!!'
         ]);
     }
 }

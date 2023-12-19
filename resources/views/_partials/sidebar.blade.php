@@ -87,6 +87,15 @@
                         <span>Check UP</span>
                     </a>
                 </li>
+                @if (in_array(session()->get('role'), ['A']))
+                    <li class="sidebar-title">Manajemen User</li>
+                    <li class="sidebar-item ">
+                        <a href="{{ route('pengguna') }}" class="sidebar-link">
+                            <i class="fa-solid fa-user-nurse"></i>
+                            <span>Petugas</span>
+                        </a>
+                    </li>
+                @endif
             </ul>
         </div>
         <button class="sidebar-toggler btn x"><i data-feather="x"></i></button>

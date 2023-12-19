@@ -12,6 +12,7 @@ use App\Http\Controllers\DataCheckUpController;
 use App\Http\Controllers\DataCheckImunisasiController;
 use App\Http\Controllers\DataCheckVitaminController;
 use App\Http\Controllers\HomeController;
+use App\Http\Controllers\PenggunaController;
 
 
 /*
@@ -43,5 +44,6 @@ Route::middleware('api')->group(function () {
     Route::resource('/datacheckup', DataCheckUpController::class, ['as' => 'checkup', 'except' => ['create', 'edit']]);
     Route::resource('/datacheckimunisasi', DataCheckImunisasiController::class, ['as' => 'checkimunisasi', 'except' => ['create', 'edit']]);
     Route::resource('/datacheckvitamin', DataCheckVitaminController::class, ['as' => 'checkvitamin', 'except' => ['create', 'edit']]);
-    Route::get('/cardstatistik',[HomeController::class,'statistikcard'])->name('cardstatistik');
+    Route::get('/cardstatistik', [HomeController::class, 'statistikcard'])->name('cardstatistik');
+    Route::resource('/pengguna', PenggunaController::class, ['as' => 'pengguna', 'except' => ['create', 'edit']]);
 });
