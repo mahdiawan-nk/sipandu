@@ -14,7 +14,7 @@ use App\Models\DataJenisVitamin;
 
 class DataCheckUpController extends Controller
 {
-    protected $role, $idposyandu,$idUser;
+    protected $role, $idposyandu, $idUser;
 
     public function __construct()
     {
@@ -62,19 +62,18 @@ class DataCheckUpController extends Controller
                     return $this->transformedData($data);
                 });
         } else {
-            $Anak = DataAnak::where('id_ibu',$this->idUser)->get();
+            $Anak = DataAnak::where('id_ibu', $this->idUser)->get();
             $anakId = $Anak->pluck('id');
             $dataCheckUp = DataCheckUp::with([
                 'dataAnak',
                 'dataImunisasi.DataJenisImunisasi:id,jenis_imunisasi',
                 'dataVitamin.DataJenisVitamin:id,nama_vitamin'
             ])
-            ->whereIn('id_anak',$anakId)
+                ->whereIn('id_anak', $anakId)
                 ->get()
                 ->map(function ($data) {
                     return $this->transformedData($data);
                 });
-            
         }
 
         return response()->json($dataCheckUp);

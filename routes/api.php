@@ -45,5 +45,6 @@ Route::middleware('api')->group(function () {
     Route::resource('/datacheckimunisasi', DataCheckImunisasiController::class, ['as' => 'checkimunisasi', 'except' => ['create', 'edit']]);
     Route::resource('/datacheckvitamin', DataCheckVitaminController::class, ['as' => 'checkvitamin', 'except' => ['create', 'edit']]);
     Route::get('/cardstatistik', [HomeController::class, 'statistikcard'])->name('cardstatistik');
+    Route::get('/statistiktinggianak', [HomeController::class, 'linetinggibadan'])->name('statistiktinggi');
     Route::resource('/pengguna', PenggunaController::class, ['as' => 'pengguna', 'except' => ['create', 'edit']]);
 });

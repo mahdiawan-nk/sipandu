@@ -96,7 +96,22 @@
                         }
                     },
                     {
-                        data: 'start'
+                        data: 'start',
+                        render: function(data) {
+                            const tanggalDalam = new Date(
+                            data); // Mengonversi string tanggalAwal menjadi objek Date
+                            const tanggal = tanggalDalam.getDate().toString().padStart(2,
+                                '0'); // Mendapatkan tanggal dengan format 2 digit
+                            const bulan = (tanggalDalam.getMonth() + 1).toString().padStart(2,
+                                '0'
+                                ); // Mendapatkan bulan dengan format 2 digit (penambahan 1 karena bulan dimulai dari 0)
+                            const tahun = tanggalDalam.getFullYear();
+
+                            const formatTglBlnThn =
+                                `${tanggal}-${bulan}-${tahun}`; // Format tanggal-bulan-tahun
+
+                            return formatTglBlnThn;
+                        }
                     },
                     {
                         data: 'title'

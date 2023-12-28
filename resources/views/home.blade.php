@@ -66,8 +66,7 @@
                                         <h3 class='card-title'>Data Petugas</h3>
                                     </div>
                                     <div class="px-3 d-flex justify-content-between">
-                                        <h3 class='card-title'><i
-                                                class="fa-solid fa-user-nurse fa-fade fa-2xl"></i>
+                                        <h3 class='card-title'><i class="fa-solid fa-user-nurse fa-fade fa-2xl"></i>
                                         </h3>
                                         <div class="card-right d-flex align-items-center">
                                             <p class="fs-1 p-0 card-s" id="data_petugas">0</p>
@@ -87,8 +86,7 @@
                                         <h3 class='card-title'>Data Check UP</h3>
                                     </div>
                                     <div class="px-3 d-flex justify-content-between">
-                                        <h3 class='card-title'><i
-                                                class="fa-solid fa-list-check fa-fade fa-2xl"></i>
+                                        <h3 class='card-title'><i class="fa-solid fa-list-check fa-fade fa-2xl"></i>
                                         </h3>
                                         <div class="card-right d-flex align-items-center">
                                             <p class="fs-1 p-0 card-s" id="data_checkup">0</p>
@@ -209,51 +207,7 @@
                     },
                 },
             };
-            var LineOptions = {
-                chart: {
-                    type: 'line',
-                    height: 350,
-                    toolbar: {
-                        show: true
-                    }
-                },
-                series: [{
-                    name: 'BCG',
-                    data: [50, 60, 70, 80, 90, 95, 100]
-                }, {
-                    name: 'Hepatitis B',
-                    data: [45, 55, 65, 75, 85, 90, 95]
-                }, {
-                    name: 'DPT',
-                    data: [60, 70, 75, 80, 85, 90, 95]
-                }, {
-                    name: 'Polio',
-                    data: [70, 75, 80, 85, 90, 95, 100]
-                }, {
-                    name: 'MMR',
-                    data: [55, 65, 75, 80, 85, 90, 95]
-                }],
-                xaxis: {
-                    categories: ['Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun', 'Jul'],
-                },
-                yaxis: {
-                    title: {
-                        text: 'Persentase Imunisasi'
-                    }
-                },
-                stroke: {
-                    curve: 'smooth'
-                },
-                markers: {
-                    size: 4,
-                    colors: ['#008FFB', '#00E396', '#FEB019', '#FF4560', '#775DD0']
-                },
-                legend: {
-                    position: 'top',
-                    horizontalAlign: 'left',
-                    offsetX: 40
-                }
-            }
+
 
             var PolarOptions = {
                 chart: {
@@ -291,7 +245,7 @@
             }
 
             var bar = new ApexCharts(document.querySelector("#bar"), barOptions);
-            var line = new ApexCharts(document.querySelector("#line"), LineOptions);
+
             var polar = new ApexCharts(document.querySelector("#polar"), PolarOptions);
             bar.render();
             line.render();
@@ -331,6 +285,70 @@
                         </div>
                     </div>
                 </div>
+                @if (in_array(session()->get('role'), ['O']))
+                    <div class="col-md-12">
+                        <div class="card">
+                            <div class="card-header">
+                                <h4>Statistik Tinggi Badan Anak</h4>
+                            </div>
+                            <div class="card-body">
+                                <div id="area"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <script>
+                        const url = '{{ route('statistiktinggi') }}';
+                        fetch(url)
+                            .then(response => response.json())
+                            .then(data => {
+                                console.log(data)
+                                let month = data.map(item => {
+                                    // Memformat tanggal hanya menampilkan bulan
+                                    return item.bulan_periksa
+                                });
+                                let heights = data.map(item => item.tinggi_pemeriksaan);
+                                var LineOptions = {
+                                    chart: {
+                                        type: 'area',
+                                        height: 350,
+                                        toolbar: {
+                                            show: true
+                                        }
+                                    },
+                                    series: [{
+                                        name: 'BCG',
+                                        data: heights
+                                    }],
+                                    xaxis: {
+                                        categories: month,
+                                    },
+                                    yaxis: {
+                                        title: {
+                                            text: 'Tinggi Badan'
+                                        }
+                                    },
+                                    stroke: {
+                                        curve: 'smooth'
+                                    },
+                                    markers: {
+                                        size: 4,
+                                        colors: ['#008FFB']
+                                    },
+                                    legend: {
+                                        position: 'top',
+                                        horizontalAlign: 'left',
+                                        offsetX: 40
+                                    }
+                                }
+
+                                var line = new ApexCharts(document.querySelector("#area"), LineOptions);
+                                line.render();
+                            })
+                            .catch(error => {
+                                console.log(error)
+                            })
+                    </script>
+                @endif
 
             </div>
         </section>
