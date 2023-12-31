@@ -63,12 +63,13 @@ class HomeController extends Controller
         $anakId = $Anak->pluck('id');
 
         // Mendapatkan data pemeriksaan berdasarkan id_anak, bulan, dan tahun
-        $dataTinggiBadan = DataCheckUp::select('tanggal_pemeriksaan', 'tinggi_badan_pemeriksaan')
+        $dataTinggiBadan = DataCheckUp::select('tanggal_pemeriksaan', 'tinggi_badan_pemeriksaan', 'berat_badan_pemeriksaan')
             ->whereIn('id_anak', $anakId)
             ->whereYear('tanggal_pemeriksaan', $tahun)
             ->get();
 
         $tinggiBadanPerBulan = [];
+        $BeratBadanPerBulan = [];
 
         // Inisialisasi array bulan untuk memastikan semua bulan ada dalam output JSON
         $bulanList = [
@@ -78,23 +79,28 @@ class HomeController extends Controller
 
         foreach ($bulanList as $bulan) {
             $tinggiBadanPerBulan[$bulan] = [];
+            $BeratBadanPerBulan[$bulan] = [];
         }
 
         foreach ($dataTinggiBadan as $pemeriksaan) {
             $tanggalPemeriksaan = Carbon::parse($pemeriksaan->tanggal_pemeriksaan);
             $bulanPeriksa = $tanggalPemeriksaan->format('M');
             $tinggiPemeriksaan = $pemeriksaan->tinggi_badan_pemeriksaan;
+            $BeratPemeriksaan = $pemeriksaan->berat_badan_pemeriksaan;
 
             $tinggiBadanPerBulan[$bulanPeriksa][] = $tinggiPemeriksaan;
+            $BeratBadanPerBulan[$bulanPeriksa][] = $BeratPemeriksaan;
         }
 
         $tinggiBadanPerBulanJson = [];
 
         foreach ($tinggiBadanPerBulan as $bulan => $tinggiBulanan) {
             $tinggiRataRata = count($tinggiBulanan) > 0 ? array_sum($tinggiBulanan) / count($tinggiBulanan) : null;
+            $beratRataRata = count($BeratBadanPerBulan[$bulan]) > 0 ? array_sum($BeratBadanPerBulan[$bulan]) / count($BeratBadanPerBulan[$bulan]) : null;
             $tinggiBadanPerBulanJson[] = [
                 'bulan_periksa' => $bulan,
-                'tinggi_pemeriksaan' => $tinggiRataRata
+                'tinggi_pemeriksaan' => $tinggiRataRata,
+                'berat_pemeriksaan' => $beratRataRata,
             ];
         }
 

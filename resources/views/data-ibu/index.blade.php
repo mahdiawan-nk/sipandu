@@ -60,6 +60,8 @@
     </div>
 
     <script>
+        var roleUser = '{{ Session::get('role') }}'
+        var hiddenDelete = roleUser == 'A' ? '' : 'hidden'
         var idData = null
         $(document).ready(function() {
             var table = $('#table-data').DataTable({
@@ -100,7 +102,7 @@
                         },
                         render: function(d) {
                             return `<button class="btn btn-secondary waves-effect waves-light btn-xs edit">Edit</button>
-                                        <button class="btn btn-danger waves-effect waves-light btn-xs hapus">Hapus</button>`
+                                        <button class="btn btn-danger waves-effect waves-light btn-xs hapus" ${hiddenDelete}>Hapus</button>`
                         }
                     }
                 ],

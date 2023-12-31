@@ -60,6 +60,8 @@
     </div>
 
     <script>
+        var roleUser = '{{ Session::get('role') }}'
+        var hiddenDelete = roleUser == 'A' ? '' : 'hidden'
         var idData = null
         $(document).ready(function() {
             var table = $('#table-data').DataTable({
@@ -112,7 +114,7 @@
                         },
                         render: function(d) {
                             return `<button class="btn btn-secondary waves-effect waves-light btn-xs edit">Edit</button>
-                                        <button class="btn btn-danger waves-effect waves-light btn-xs hapus">Hapus</button>`
+                                        <button class="btn btn-danger waves-effect waves-light btn-xs hapus" ${hiddenDelete}>Hapus</button>`
                         }
                     }
                 ],
@@ -171,11 +173,11 @@
                 let data = table.row($(this).parents('tr')).data()
                 idData = data.id
                 console.log(data)
-                $('#e-id_ibu').val(data.id_ibu).trigger('change'); 
+                $('#e-id_ibu').val(data.id_ibu).trigger('change');
                 $('[name="nama"]').val(data.nama)
-                if(data.jenis_kelamin == 'L'){
+                if (data.jenis_kelamin == 'L') {
                     $('#jenis_l').prop('checked', true);
-                }else{
+                } else {
                     $('#jenis_p').prop('checked', true);
                 }
                 $('[name="jenis_kelamin"]').val(data.jenis_kelamin)
@@ -184,7 +186,7 @@
                 $('[name="berat_lahir"]').val(data.berat_lahir)
                 $('[name="tinggi_lahir"]').val(data.tinggi_lahir)
                 $('[name="riwayat_kesehatan"]').val(data.riwayat_kesehatan)
-                
+
                 $('#edit').modal('show')
             });
 
@@ -192,7 +194,8 @@
                 e.preventDefault();
                 e.stopPropagation()
                 let formDataArray = new FormData(this)
-                const url = '{{ route('anak.dataanak.update', ['dataanak' => ':idData']) }}'.replace(':idData',
+                const url = '{{ route('anak.dataanak.update', ['dataanak' => ':idData']) }}'.replace(
+                    ':idData',
                     idData);
                 const requestOptions = {
                     method: 'POST',
@@ -280,8 +283,8 @@
                 })
                 .then(data => {
                     let result = [{
-                        id:'',
-                        text:'Pilih'
+                        id: '',
+                        text: 'Pilih'
                     }]
                     data.forEach(item => {
                         result.push({

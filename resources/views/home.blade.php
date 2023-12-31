@@ -301,12 +301,12 @@
                         fetch(url)
                             .then(response => response.json())
                             .then(data => {
-                                console.log(data)
                                 let month = data.map(item => {
                                     // Memformat tanggal hanya menampilkan bulan
                                     return item.bulan_periksa
                                 });
                                 let heights = data.map(item => item.tinggi_pemeriksaan);
+                                let weights = data.map(item => item.berat_pemeriksaan);
                                 var LineOptions = {
                                     chart: {
                                         type: 'area',
@@ -316,8 +316,11 @@
                                         }
                                     },
                                     series: [{
-                                        name: 'BCG',
+                                        name: 'Tinggi Badan',
                                         data: heights
+                                    }, {
+                                        name: 'Berat Badan',
+                                        data: weights
                                     }],
                                     xaxis: {
                                         categories: month,
@@ -332,7 +335,7 @@
                                     },
                                     markers: {
                                         size: 4,
-                                        colors: ['#008FFB']
+                                        colors: ['#008FFB', '#008F9B']
                                     },
                                     legend: {
                                         position: 'top',
