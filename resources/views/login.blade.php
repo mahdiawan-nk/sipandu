@@ -22,11 +22,11 @@
                             <div class="text-center mb-5">
                                 <h1 class="fw-bolder">SIPANDU</h1>
                                 @if ($for == 'pengguna-ortu')
-                                <h3>Sign In Orangtua</h3>
+                                    <h3>Sign In Orangtua</h3>
                                 @else
-                                <h3>Sign In </h3>
+                                    <h3>Sign In </h3>
                                 @endif
-                                
+
                                 <p>Please sign in to continue to SIPANDU.</p>
                             </div>
                             <form action="{{ route('checklogin') }}" method="POST">
@@ -65,9 +65,21 @@
                                     </div>
                                 </div>
                                 <div class="clearfix">
-                                    <button class="btn btn-primary btn-block">Submit</button>
+                                    <button class="btn btn-primary btn-block">Login</button>
                                 </div>
                             </form>
+                            @if ($for == 'pengguna-ortu')
+                                <div class="divider">
+                                    <div class="divider-text">OR</div>
+                                </div>
+                                <div class="row">
+                                    <div class="col-sm-12">
+                                        <a href="{{ url('/admin') }}" class="btn btn-block mb-2 btn-secondary">
+                                            Login As Admin/Petugas</a>
+                                    </div>
+                                </div>
+                            @endif
+
                         </div>
                     </div>
                 </div>
