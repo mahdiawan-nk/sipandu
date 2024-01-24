@@ -31,7 +31,8 @@
                         <div class="col-12">
                             <div class="form-group mb-3">
                                 <label for="nik" class="form-label">Cari Data Anak</label>
-                                <input type="search" class="form-control" id="searchInput" placeholder="Cari Berdasarkan [Nama Anak][Nama Ortu][NIK Ortu]">
+                                <input type="search" class="form-control" id="searchInput"
+                                    placeholder="Cari Berdasarkan [Nama Anak][Nama Ortu][NIK Ortu]">
                             </div>
                         </div>
                         <div class="col-12">
@@ -210,42 +211,60 @@
 </div>
 
 <script>
-    var tableImunisasi = $('#table-imunisasi').DataTable({
-        paging: false,
-        scrollCollapse: false,
-        scrollY: '25vh',
-        ajax: {
-            url: '{{ route('jenisimunisasi.datajenisimunisasi.index') }}',
-            type: "GET",
-            dataSrc: "",
-        },
-        columns: [{
-                data: 'id',
-                render: function(data) {
-                    return `<input type="checkbox" class="form-check-input form-check-primary checklist-imunisasi" value="${data}" name="checklis_imunisasi[]" disabled data-id="${data}">`
-                }
-            },
-            {
-                data: 'id',
-                render: function(data) {
-                    return `<input type="text" name="tgl_beri_imunisasi[${data}]" value="" class="form-control tgl-beri" readonly required>`
-                }
-            },
-            {
-                data: 'jenis_imunisasi'
-            },
-            {
+    var tableImunisasi;
+
+    function dataTableImunisasi() {
+        tableImunisasi = $('#table-imunisasi').DataTable({
+            paging: false,
+            "processing": true,
+            scrollCollapse: false,
+            scrollY: '25vh',
+            ajax: {
+                url: '{{ route('jenisimunisasi.datajenisimunisasi.index') }}',
+                type: "GET",
                 data: {
-                    id: 'id'
+                    idanak: $('[name="id_anak"]').val(),
+                    tgl: $('[name="tanggal_pemeriksaan"]').val()
                 },
-                render: function(d) {
-                    return `<input type="text" name="dosis_imunisasi[${d.id}]"" value="" class="form-control" readonly id="dosis-imunisasi-${d.id}" required>`
-                }
+                dataSrc: "",
             },
-        ],
-        // deferRender: true,
-        "destroy": true
-    });
+            columns: [{
+                    data: 'id',
+                    render: function(data) {
+                        return `<input type="checkbox" class="form-check-input form-check-primary checklist-imunisasi" value="${data}" name="checklis_imunisasi[]" disabled data-id="${data}">`
+                    }
+                },
+                {
+                    data: 'id',
+                    render: function(data) {
+                        return `<input type="text" name="tgl_beri_imunisasi[${data}]" value="" class="form-control tgl-beri" readonly required>`
+                    }
+                },
+                {
+                    data: 'jenis_imunisasi'
+                },
+                {
+                    data: {
+                        id: 'id'
+                    },
+                    render: function(d) {
+                        return `<input type="text" name="dosis_imunisasi[${d.id}]"" value="" class="form-control" readonly id="dosis-imunisasi-${d.id}" required>`
+                    }
+                },
+            ],
+            // deferRender: true,
+            "destroy": true
+        });
+
+        tableImunisasi.on('draw', function() {
+            $('td .tgl-beri').flatpickr({
+                enableTime: false,
+                dateFormat: "Y-m-d",
+                defaultDate: moment().format('YYYY-MM-DD')
+            });
+        });
+    }
+
 
     var tableVitamin = $('#table-vitamin').DataTable({
         paging: false,
@@ -295,13 +314,6 @@
 
     })
 
-    tableImunisasi.on('draw', function() {
-        $('td .tgl-beri').flatpickr({
-            enableTime: false,
-            dateFormat: "Y-m-d",
-            defaultDate: moment().format('YYYY-MM-DD')
-        });
-    });
 
     tableVitamin.on('draw', function() {
         $('td .tgl-beri').flatpickr({
@@ -405,27 +417,30 @@
         }
     });
 
-    $('#table-imunisasi').on('click','.checklist-imunisasi',function(){
+    $('#table-imunisasi').on('click', '.checklist-imunisasi', function() {
         let id = $(this).data('id');
         let status = $(this).prop('checked');
-        if(status){
-            $('#dosis-imunisasi-'+id).removeAttr('readonly')
-        }else{
-            $('#dosis-imunisasi-'+id).attr('readonly','readonly')
+        if (status) {
+            $('#dosis-imunisasi-' + id).removeAttr('readonly')
+        } else {
+            $('#dosis-imunisasi-' + id).attr('readonly', 'readonly')
         }
     })
 
-    $('#table-vitamin').on('click','.checklist-vitamin',function(){
+    $('#table-vitamin').on('click', '.checklist-vitamin', function() {
         let id = $(this).data('id');
         let status = $(this).prop('checked');
-        if(status){
-            $('#dosis-vitamin-'+id).removeAttr('readonly')
-        }else{
-            $('#dosis-vitamin-'+id).attr('readonly','readonly')
+        if (status) {
+            $('#dosis-vitamin-' + id).removeAttr('readonly')
+        } else {
+            $('#dosis-vitamin-' + id).attr('readonly', 'readonly')
         }
     })
+
     function selectedData(item) {
         let dataArray = item.split(',');
+        idanak = dataArray[0]
+
         $('#id_anak').val(dataArray[0])
         $('#searchResults').empty();
         $('#searchInput').val('');
@@ -437,6 +452,8 @@
         $('#v-bb').text(dataArray[4])
         $('#v-bt').text(dataArray[5])
         $('.form-data').removeClass('d-none');
+        dataTableImunisasi()
+
     }
 
     function hitungUsia(tanggalLahir) {

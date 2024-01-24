@@ -3,6 +3,8 @@
 namespace App\Http\Controllers;
 
 use App\Models\DataJenisImunisasi;
+use App\Models\CheckUpImunisasi as imunisasi;
+use App\Models\DataCheckUp as checkup;
 use Illuminate\Http\Request;
 
 class DataJenisImunisasiController extends Controller
@@ -21,7 +23,25 @@ class DataJenisImunisasiController extends Controller
      */
     public function index()
     {
-        $data = DataJenisImunisasi::all();
+        $idanak = request()->get('idanak');
+        $tgl = request()->get('tgl');
+        if ($idanak && $tgl) {
+            $isExistCheckUp = checkup::where('id_anak', $idanak)->where('tanggal_pemeriksaan', $tgl)->latest()->first();
+            if ($isExistCheckUp) {
+                $isExistImunisasi = imunisasi::where('id_checkup', $isExistCheckUp->id)->first();
+                if ($isExistImunisasi) {
+                    $data = DataJenisImunisasi::where('id', '!=', $isExistImunisasi->id_imunisasi)->get();
+                } else {
+                    $data = DataJenisImunisasi::all();
+                }
+            } else {
+                $data = DataJenisImunisasi::all();
+            }
+        }else{
+            $data = DataJenisImunisasi::all();
+        }
+
+
         return response()->json($data);
     }
 
@@ -81,8 +101,8 @@ class DataJenisImunisasiController extends Controller
     {
         $datajenisimunisasi->fill($request->post())->save();
         return response()->json([
-            'message'=>'Updated Successfully!!',
-            'category'=>$datajenisimunisasi
+            'message' => 'Updated Successfully!!',
+            'category' => $datajenisimunisasi
         ]);
     }
 
@@ -96,7 +116,7 @@ class DataJenisImunisasiController extends Controller
     {
         $datajenisimunisasi->delete();
         return response()->json([
-            'message'=>'Deleted Successfully!!'
+            'message' => 'Deleted Successfully!!'
         ]);
     }
 }
